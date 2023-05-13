@@ -1,0 +1,64 @@
+version: '3'
+
+services:
+  nginx:
+    build: 
+      context: ./nginx
+      args:
+        SYMFONY_HOST_NAME: "jusbaires.local.com"
+    volumes:
+      - ./src:/var/www/symfony
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - symfonynet
+    depends_on:
+      - phpfpm
+
+  phpfpm:
+    build: ./phpfpm
+    environment:
+      APP_ENV: dev
+    volumes:
+      - ./src:/var/www/symfony
+    networks:
+      - symfonynet
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql
+    command:
+      [
+        '--character-set-server=utf8mb4',
+        '--collation-server=utf8mb4_unicode_ci',
+        '--default-authentication-plugin=mysql_native_password'
+      ]
+    env_file: ./env/mysql.env
+    ports:
+      - 3309:3306
+    volumes:
+      - mysqldata:/var/lib/mysql
+    networks:
+      - symfonynet
+
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - 8080:80
+    env_file: ./env/phpmyadmin.env
+    networks:
+      - symfonynet
+
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - 8025:8025
+    networks:
+      - symfonynet
+
+networks:
+  symfonynet:
+volumes:
+  mysqldata:
