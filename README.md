@@ -6,6 +6,7 @@ A Docker Compose file to use as a base for Angular projects.
 
 ### Initial setup
 ```bash
+git clone git@github.com:xvillagran/symfony-docker-compose.git
 cp /path/to/your/code/folder ./src
 docker compose build
 docker compose up -d
